@@ -9,7 +9,7 @@ using namespace std;
 
 long long L;
 int N, K;
-int arr[500001]; // 밝기는 최대 500000(K의 최댓값)까지 가능.
+int arr[500001]; // 밝기는 최대 499999(K의 최댓값)까지 가능.
 long long pred, tmp, interval;
 
 void imos(){
@@ -48,7 +48,7 @@ void imos(){
     // imos 누적: 마지막 N번째 가로등 ~ 마지막 지점
     arr[0] += 1;
     interval = L - tmp;
-    if(interval/2 < 500000){
+    if(interval < 500000){
         arr[interval + 1] -= 1;
     }
     else{
@@ -56,7 +56,7 @@ void imos(){
     }
 
     // imos 계산하기
-    for(int i = 1 ; i < 500001 ; i++){
+    for(int i = 1 ; i < 500000 ; i++){
         arr[i] = arr[i-1] + arr[i];
     }
     arr[0] = N; // arr[0] 정상화(가로등 개수만큼)
@@ -76,7 +76,7 @@ int main(){
     // 정답 출력
     int cnt{0};
     while(cnt != K){
-        for(int i = 0 ; i < K ; i++){
+        for(int i = 0 ; i < 500000 ; i++){
             for(int j = 0 ; j < arr[i] ; j++){
                 cout << i << '\n';
                 cnt++;
