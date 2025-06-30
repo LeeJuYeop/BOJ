@@ -15,8 +15,14 @@ long long pred, tmp, interval;
 void imos(){
     // imos 누적 : 1번째 가로등
     cin >> tmp;
+    interval = tmp - pred;
     arr[0] += 1;
-    arr[tmp+1] -= 1;
+    if(interval < 500000){
+        arr[interval+1] -= 1;
+    }
+    else{
+        arr[500000] -= 1;
+    }
     pred = tmp;
     // imos 누적: 1 ~ N-1 번째 가로등
     for(int i = 1 ; i < N ; i++){
@@ -26,17 +32,28 @@ void imos(){
         if(interval == 1){continue;} // 가로등끼리 붙어있으면 넘어간다
 
         arr[0] += 2;    // 시작지점인 0
-        arr[(interval/2) + 1] -= 1;
-        if((interval)%2==0){
-            arr[(interval/2)] -= 1;
+        if(interval/2 < 500000){
+            arr[(interval/2) + 1] -= 1;
+            if((interval)%2==0){
+                arr[(interval/2)] -= 1;
+            }
+            else{
+                arr[(interval/2) + 1] -= 1;
+            }
         }
         else{
-            arr[(interval/2) + 1] -= 1;
+            arr[500000] -= 2;
         }
     }
     // imos 누적: 마지막 N번째 가로등 ~ 마지막 지점
     arr[0] += 1;
-    arr[L - tmp + 1] -= 1;
+    interval = L - tmp;
+    if(interval/2 < 500000){
+        arr[interval + 1] -= 1;
+    }
+    else{
+        arr[500000] -= 1;
+    }
 
     // imos 계산하기
     for(int i = 1 ; i < 500001 ; i++){
@@ -47,6 +64,8 @@ void imos(){
     // cout << arr[1] << endl;
     // cout << arr[2] << endl;
     // cout << arr[3] << endl;
+    // cout << arr[K-1] << endl;
+    // cout << arr[K] << endl;
 }
 
 int main(){
@@ -59,7 +78,7 @@ int main(){
     while(cnt != K){
         for(int i = 0 ; i < K ; i++){
             for(int j = 0 ; j < arr[i] ; j++){
-                cout << i << endl;
+                cout << i << '\n';
                 cnt++;
                 if(cnt == K){return 0;}
             }
