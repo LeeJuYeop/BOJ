@@ -1,82 +1,58 @@
-// BFS DFS 탐색문제.
-// 같은 맵에서, 같은 도착점을 기준으로, 다른 시작지점으로 경우를 따지므로
-// 도착점을 기준으로 맵의 모든 곳에대해서 걸리는 시간(횟수)을 기록해놓자.
-
-
 #include <iostream>
+#include <algorithm>
+#include <vector>
 #include <queue>
+
 using namespace std;
+#define fastio cin.tie(0)->sync_with_stdio(0)
 
-int N, M, K;
-int DP[301][301];
-int arr[301][301];
-int dy[301] = {0, -1};
-int dx[301] = {-1, 0};
-queue<pair<int,int>> q;
+using ll = long long;
+using matrix = vector<vector<ll>>;
+using vi = vector<int>;
+using vl = vector<ll>;
+using vvi = vector<vi>;
+using vvvi = vector<vvi>;
+using pii = pair<int, int>;
+using vpii = vector<pii>;
+using vb = vector<bool>;
 
-void DFS(){
-    q.push(make_pair(N, M));
-    DP[N][M] = 0;
-    int ny, nx;
-    while(!q.empty()){
-        int ty = q.front().first;
-        int tx = q.front().second;
-        q.pop();
-        for(int d = 0 ; d < 2 ; d++){   // 위한칸, 왼쪽한칸에 대해서 먼저
-            ny = ty + dy[d];
-            nx = tx + dx[d];
-            if(ny > 0 && ny < N+1 && nx > 0 && nx < M+1 && !arr[ny][nx] && !DP[ny][nx]){
-                DP[ny][nx] = DP[ty][tx] + 1;
-                q.push(make_pair(ny, nx));
-            }
-        }
+// 풀이 2. 첫번째 순서가 이기 못하면 무조건 두번째 순서가 이기는 경우다.
+int n, m, k, q;
+vector<string> tmap;
+vvi dp;
 
-        for(int d = 2 ; d < 2+K ; d++){   // 대각선 이동
-            ny = ty + dy[d];
-            nx = tx + dx[d];
-            if(arr[ny][nx]){    // 한번 벽에 막히면 더 이상 대각선으로 이동하지 않음
-                break;
-            }
-            if(ny > 0 && ny < N+1 && nx > 0 && nx < M+1 && !DP[ny][nx]){
-                DP[ny][nx] = DP[ty][tx] + 1;
-                q.push(make_pair(ny, nx));
-            }
-        }
+int go(int x, int y) {
+    if(dp[x][y] != -1) return dp[x][y];
+    int &ans = dp[x][y];
+    // 한가지 경우라도 해당되면 더 볼 필요없음
+    if(x+1 < n && tmap[x+1][y] != '#' && !go(x+1, y)) return ans = 1;
+    if(y+1 < m && tmap[x][y+1] != '#' && !go(x, y+1)) return ans = 1;
+    for(int i=1; i<=k; ++i) {
+        if(x+i < n && y+i < m && tmap[x+i][y+i] != '#' && !go(x+i, y+i)) return ans=1;
+    }
+    return 0; // 아무리 해도 첫번 째가 이길 수 없다면 두번째가 이기는 것이다. 
+}
+
+void solve() {
+    cin >> n >> m >>k;
+    tmap = vector<string>(n);
+    // (x, y)를 시작위치로 할 때 먼저 시작하는 사람이 이기는지 여부
+    dp = vvi(n, vi(m, -1));
+    dp[n-1][m-1] = 0; // (n-1, m-1)에서 시작하면 두번 째가 이긴다는 이야기
+    for(int i=0; i<n; ++i) cin >> tmap[i];
+    cin >> q;
+    for(int i=0; i<q;++i) {
+        int x, y;
+        cin >> x >> y;
+        --x, --y;
+        int ans = go(x, y);
+        if(ans) cout << "First\n";
+        else cout << "Second\n";
     }
 }
 
-int main(){
-    cin >> N >> M >> K;
-    string input;
-    for(int i = 1 ; i < N+1 ; i++){
-        cin >> input;
-        for(int j = 1 ; j < M+1 ; j++){
-            if(input[j-1] == '.'){
-                arr[i][j] = 0;
-            }
-            else{
-                arr[i][j] = 1;
-            }
-        }
-    }
-    // dy dx 세팅
-    for(int k = 1 ; k < K+1 ; k++){
-        dy[1+k] = -k;
-        dx[1+k] = -k;
-    }
-
-    // 로직시작
-    DFS();
-    
-    int T, y, x;
-    cin >> T;
-    for(int t = 0 ; t < T ; t++){
-        cin >> y >> x;
-        if(DP[y][x]%2 == 0){
-            cout << "Second" << endl;
-        }
-        else{
-            cout << "First" << endl;
-        }
-    }
+int main() {
+    fastio;
+    solve();
+    return 0;
 }
